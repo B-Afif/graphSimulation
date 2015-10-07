@@ -9,7 +9,7 @@
 
 
 Node::Node(GraphWidget *graphWidget, int i)
-    : graph(graphWidget), tag(i), active(false)
+    : graph(graphWidget), tag(i), active(-1), explored(false)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -20,6 +20,12 @@ Node::Node(GraphWidget *graphWidget, int i)
 void Node::addEdge(Edge *edge)
 {
     edgeList << edge;
+    edge->adjust();
+}
+
+void Node::addIncoming(Edge *edge)
+{
+    incomingEdgesList << edge;
     edge->adjust();
 }
 
@@ -63,14 +69,19 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         gradient.setColorAt(1, QColor(Qt::yellow).light(120));
         gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
     }
-    else if (active)
+    else if (active==1)
     {
         gradient.setCenter(3, 3);
         gradient.setFocalPoint(3, 3);
-        gradient.setColorAt(1, QColor(Qt::red).light(120));
-        gradient.setColorAt(0, QColor(Qt::darkRed).light(120));
+        gradient.setColorAt(1, QColor(Qt::green).light(120));
+        gradient.setColorAt(0, QColor(Qt::darkGreen).light(120));
     }
-    else {
+    else if (active==0)
+    {
+        gradient.setColorAt(0, Qt::gray);
+        gradient.setColorAt(1, Qt::darkGray);
+    }
+    else{
         gradient.setColorAt(0, Qt::yellow);
         gradient.setColorAt(1, Qt::darkYellow);
     }
@@ -86,6 +97,8 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
     switch (change) {
     case ItemPositionHasChanged:
         foreach (Edge *edge, edgeList)
+            edge->adjust();
+        foreach (Edge *edge, incomingEdgesList)
             edge->adjust();
         graph->itemMoved();
         break;

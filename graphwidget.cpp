@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include <QKeyEvent>
+#include <QQueue>
 
 GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
     : QGraphicsView(parent)
@@ -71,18 +72,44 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
             }
         }
     }
-
 }
 
 void GraphWidget::startSim()
 {
-    for (int i=0; i<numNodes; i++)
+    /*for (int i=0; i<numNodes; i++)
     {
-        nodes[i]->setState(true);
+        nodes[i]->setState(0);
         if(i>0) nodes[i-1]->update();
         nodes[i]->update();
         Delay(1000);
-        nodes[i]->setState(false);
+        nodes[i]->setState(-1);
+        nodes[i]->update();
+    }*/
+    /*foreach(Edge *e,nodes[2]->edges())
+    {
+        if(e->destNode()==nodes[4])
+        {
+            e->setState(1);
+            e->update();
+        }
+    }*/
+    QQueue<Node *> Q;
+    Q.enqueue(nodes[0]);
+    nodes[0]->setExplored(true);
+    while (!Q.isEmpty())
+    {
+        Node *n = Q.dequeue();
+        n->setState(0);
+        //if(i>0) nodes[i-1]->update();
+        n->update();
+        Delay(1000);
+        n->setState(-1);
+        n->update();
+        foreach(Edge *e, n->allEdges())
+        {
+            if(e->is)
+        }
+
     }
 }
 

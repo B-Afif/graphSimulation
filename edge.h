@@ -14,6 +14,8 @@ public:
     Node *destNode() const;
 
     void adjust();
+    void setState(int i){state=i;};
+    qreal val(){return value;};
 
     enum { Type = UserType + 2 };
     int type() const Q_DECL_OVERRIDE { return Type; }
@@ -27,7 +29,8 @@ private:
 
     QPointF sourcePoint;
     QPointF destPoint;
-    qreal arrowSize;
     qreal value;
+    qreal arrowSize;
+    int state;
 };
 #endif

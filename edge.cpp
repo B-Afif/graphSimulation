@@ -8,12 +8,13 @@
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
 
-Edge::Edge(Node *sourceNode, Node *destNode,int val):value(val), arrowSize(10)
+Edge::Edge(Node *sourceNode, Node *destNode,int val):value(val), arrowSize(10), state(0)
 {
     setAcceptedMouseButtons(0);
     source = sourceNode;
     dest = destNode;
     source->addEdge(this);
+    dest->addIncoming(this);
     adjust();
 }
 
@@ -70,7 +71,15 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
         return;
 
     // Draw the line itself
-    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    if (state==1){
+    painter->setPen(QPen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }
+    else if (state==-1){
+        painter->setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }
+    else{
+        painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }
     painter->drawLine(line);
 
     // Draw the arrows
@@ -83,6 +92,14 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     QPointF destArrowP2 = destPoint + QPointF(sin(angle - Pi + Pi / 3) * arrowSize,
                                               cos(angle - Pi + Pi / 3) * arrowSize);
 
-    painter->setBrush(Qt::black);
+    if (state==1){
+    painter->setBrush(Qt::green);
+    }
+    else if (state==-1){
+        painter->setBrush(Qt::red);
+    }
+    else{
+        painter->setBrush(Qt::black);
+    }
     painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }

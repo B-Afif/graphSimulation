@@ -23,4 +23,4 @@ RESOURCES += \
     classwizard.qrc
 
 FORMS += \
-    fentable.ui
+    selection.ui

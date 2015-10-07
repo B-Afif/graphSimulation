@@ -1,11 +1,12 @@
 #include "selection.h"
-#include "ui_fentable.h"
+#include "ui_selection.h"
 #include "graphwidget.h"
 #include "simulation.h"
 
 #include <QApplication>
 #include <QTime>
 #include <QMainWindow>
+#include <QStringList>
 
 FenTable::FenTable(int num,bool oriented, QWidget *parent) :
     QWidget(parent),
@@ -16,6 +17,15 @@ FenTable::FenTable(int num,bool oriented, QWidget *parent) :
     ui->setupUi(this);
     ui->Table->setColumnCount(nodes);
     ui->Table->setRowCount(nodes);
+    QStringList headers;
+    for (int i=0; i<nodes; i++)
+    {
+        QString q=QString::number(i);
+        headers<<q;
+    }
+
+    ui->Table->setVerticalHeaderLabels(headers);
+    ui->Table->setHorizontalHeaderLabels(headers);
 
     for(int i=0; i<nodes; i++)
     {
@@ -60,8 +70,8 @@ FenTable::FenTable(int num,bool oriented, QWidget *parent) :
     }
     for (int i=0; i<nodes; i++)
        {
-           ui->startNodeBox->addItem(QString::number(i+1));
-           ui->finishNodeBox->addItem(QString::number(i+1));
+           ui->startNodeBox->addItem(QString::number(i));
+           ui->finishNodeBox->addItem(QString::number(i));
        }
 }
 

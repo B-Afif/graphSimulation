@@ -16,7 +16,10 @@ public:
     Node(GraphWidget *graphWidget,int i);
 
     void addEdge(Edge *edge);
+    void addIncoming(Edge *edge);
     QList<Edge *> edges() const;
+    QList<Edge *> incomingEdges() const;
+    QList<Edge *> allEdges() {return edgeList + incomingEdgesList}
 
     enum { Type = UserType + 1 };
     int type() const Q_DECL_OVERRIDE { return Type; }
@@ -27,7 +30,10 @@ public:
     QPainterPath shape() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
-    void setState(bool s){active=s;};
+    void setState(int s){active=s;};
+    bool isExplored(){return explored;};
+    void setExplored(bool b){explored=b;};
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
 
@@ -36,11 +42,14 @@ protected:
 
 private:
     QList<Edge *> edgeList;
+    QList<Edge *> incomingEdgesList;
+    //QList<Edge *> allEdgesList;
     QList<Node *> descendants;
     QPointF newPos;
     GraphWidget *graph;
     int tag;
-    bool active;
+    int active;
+    bool explored;
 };
 
 #endif
