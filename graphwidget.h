@@ -3,7 +3,7 @@
 
 #include <QGraphicsView>
 #include <QTableWidget>
-
+#include <QString>
 class Node;
 
 class GraphWidget : public QGraphicsView
@@ -15,7 +15,7 @@ public:
 
     void itemMoved();
 
-    void startSim();
+    void startSim(QString alg);
 
 public slots:
     void shuffle();

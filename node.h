@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QList>
+#include <algorithm>
 
 class Edge;
 class GraphWidget;
@@ -15,11 +16,15 @@ class Node : public QGraphicsItem
 public:
     Node(GraphWidget *graphWidget,int i);
 
+    int getTag(){return tag;};
+
     void addEdge(Edge *edge);
     void addIncoming(Edge *edge);
     QList<Edge *> edges() const;
     QList<Edge *> incomingEdges() const;
-    QList<Edge *> allEdges() {return edgeList + incomingEdgesList}
+    QList<Edge *> allEdges() {return edgeList + incomingEdgesList;}
+
+    QList<Node *> connected();
 
     enum { Type = UserType + 1 };
     int type() const Q_DECL_OVERRIDE { return Type; }
@@ -43,7 +48,7 @@ protected:
 private:
     QList<Edge *> edgeList;
     QList<Edge *> incomingEdgesList;
-    //QList<Edge *> allEdgesList;
+    QList<Node *> connectedNodes;
     QList<Node *> descendants;
     QPointF newPos;
     GraphWidget *graph;

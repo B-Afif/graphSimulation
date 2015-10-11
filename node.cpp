@@ -34,6 +34,17 @@ QList<Edge *> Node::edges() const
     return edgeList;
 }
 
+QList<Node *> Node::connected()
+{
+    foreach(Edge *e, edgeList) connectedNodes<<e->destNode();
+    foreach(Edge *e, incomingEdgesList)
+    {
+        if (! connectedNodes.contains(e->sourceNode())) connectedNodes<<e->sourceNode();
+    }
+    std::sort(connectedNodes.begin(),connectedNodes.end());
+    return connectedNodes;
+}
+
 bool Node::advance()
 {
     if (newPos == pos())

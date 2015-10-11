@@ -7,6 +7,7 @@
 
 #include <QKeyEvent>
 #include <QQueue>
+#include <QStack>
 
 GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
     : QGraphicsView(parent)
@@ -74,7 +75,7 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
     }
 }
 
-void GraphWidget::startSim()
+void GraphWidget::startSim(QString alg)
 {
     /*for (int i=0; i<numNodes; i++)
     {
@@ -93,26 +94,67 @@ void GraphWidget::startSim()
             e->update();
         }
     }*/
+    if(alg == "Parcours en Largeur")
+    {
     QQueue<Node *> Q;
+    Node *o = nodes[0];
     Q.enqueue(nodes[0]);
     nodes[0]->setExplored(true);
     while (!Q.isEmpty())
     {
         Node *n = Q.dequeue();
-        n->setState(0);
-        //if(i>0) nodes[i-1]->update();
-        n->update();
-        Delay(1000);
-        n->setState(-1);
-        n->update();
-        foreach(Edge *e, n->allEdges())
+        n->setState(1);
+        if(n->getTag()>0)
         {
-            if(e->is)
+            o->setState(0);
+            nodes[o->getTag()]->update();
         }
-
+        n->update();
+        foreach(Edge* e,n->edges())
+        {
+            if (!e->destNode()->isExplored())
+            {
+                Q.enqueue(e->destNode());
+                e->destNode()->setExplored(true);
+            }
+        }
+        o=n;
+        Delay(2000);
+    }
+    o->setState(0);
+    nodes[o->getTag()]->update();
+    }
+    if(alg == "Parcours en Profondeur")
+    {
+        QStack<Node *> s;
+        Node *o = nodes[0];
+        s.push(nodes[0]);
+        nodes[0]->setExplored(true);
+        while (!s.isEmpty())
+        {
+            Node *n = s.pop();
+            n->setState(1);
+            if(n->getTag()>0)
+            {
+                o->setState(0);
+                nodes[o->getTag()]->update();
+            }
+            n->update();
+            for(int i=n->edges().size()-1; i>=0;i--)
+            {
+                if (!n->edges()[i]->destNode()->isExplored())
+                {
+                    s.push(n->edges()[i]->destNode());
+                    n->edges()[i]->destNode()->setExplored(true);
+                }
+            }
+            o=n;
+            Delay(2000);
+        }
+        o->setState(0);
+        nodes[o->getTag()]->update();
     }
 }
-
 void GraphWidget::itemMoved()
 {
     if (!timerId)

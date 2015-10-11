@@ -83,7 +83,7 @@ FenTable::~FenTable()
 void FenTable::on_Go_clicked()
 {
     GraphWidget *widget = new GraphWidget(ui->Table,nodes);
-    Simulation *sim = new Simulation(widget);
+    Simulation *sim = new Simulation(widget,ui->algorithmsBox->currentText());
     sim->show();
     this->close();
 }
