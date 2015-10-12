@@ -75,7 +75,7 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
     }
 }
 
-void GraphWidget::startSim(QString alg)
+void GraphWidget::startSim(QString alg, int start, int end)
 {
     /*for (int i=0; i<numNodes; i++)
     {
@@ -97,14 +97,14 @@ void GraphWidget::startSim(QString alg)
     if(alg == "Parcours en Largeur")
     {
     QQueue<Node *> Q;
-    Node *o = nodes[0];
-    Q.enqueue(nodes[0]);
-    nodes[0]->setExplored(true);
-    while (!Q.isEmpty())
+    Node *o = nodes[start];
+    Q.enqueue(nodes[start]);
+    nodes[start]->setExplored(true);
+    while ((!Q.isEmpty()) && (o->getTag()!=end))
     {
         Node *n = Q.dequeue();
         n->setState(1);
-        if(n->getTag()>0)
+        if(n->getTag()!=start)
         {
             o->setState(0);
             nodes[o->getTag()]->update();
@@ -127,14 +127,14 @@ void GraphWidget::startSim(QString alg)
     if(alg == "Parcours en Profondeur")
     {
         QStack<Node *> s;
-        Node *o = nodes[0];
-        s.push(nodes[0]);
-        nodes[0]->setExplored(true);
-        while (!s.isEmpty())
+        Node *o = nodes[start];
+        s.push(nodes[start]);
+        nodes[start]->setExplored(true);
+        while ((!s.isEmpty()) && (o->getTag()!=end))
         {
             Node *n = s.pop();
             n->setState(1);
-            if(n->getTag()>0)
+            if(n->getTag()!= start)
             {
                 o->setState(0);
                 nodes[o->getTag()]->update();

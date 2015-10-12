@@ -6,6 +6,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
+#include <QFont>
 
 
 Node::Node(GraphWidget *graphWidget, int i)
@@ -57,50 +58,53 @@ bool Node::advance()
 QRectF Node::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -10 - adjust, -10 - adjust, 23 + adjust, 23 + adjust);
+    return QRectF( -15 - adjust, -15 - adjust, 35 + adjust, 35 + adjust);
 }
 
 QPainterPath Node::shape() const
 {
     QPainterPath path;
-    path.addEllipse(-10, -10, 20, 20);
+    path.addEllipse(-15, -15, 30, 30);
     return path;
 }
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-7, -7, 20, 20);
-
-    QRadialGradient gradient(-3, -3, 10);
+    /*painter->setBrush(Qt::darkGray);
+    painter->drawEllipse(-10, -10, 30, 30);
+    */
+    QRadialGradient gradient(-3, -3, 15);
+    gradient.setCenter(3, 3);
+    gradient.setFocalPoint(3, 3);
     if (option->state & QStyle::State_Sunken) {
-        gradient.setCenter(3, 3);
-        gradient.setFocalPoint(3, 3);
         gradient.setColorAt(1, QColor(Qt::yellow).light(120));
         gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
     }
     else if (active==1)
     {
-        gradient.setCenter(3, 3);
-        gradient.setFocalPoint(3, 3);
-        gradient.setColorAt(1, QColor(Qt::green).light(120));
-        gradient.setColorAt(0, QColor(Qt::darkGreen).light(120));
+        gradient.setColorAt(1, QColor(Qt::green));
+        gradient.setColorAt(0, QColor(Qt::darkGreen));
     }
     else if (active==0)
     {
         gradient.setColorAt(0, Qt::gray);
         gradient.setColorAt(1, Qt::darkGray);
     }
-    else{
+    else
+    {
         gradient.setColorAt(0, Qt::yellow);
         gradient.setColorAt(1, Qt::darkYellow);
     }
     painter->setBrush(gradient);
-
     painter->setPen(QPen(Qt::black, 0));
-    painter->drawEllipse(-10, -10, 20, 20);
-    painter->drawText(-3,5,QString::number(tag));
+    painter->drawEllipse(-15, -15, 30, 30);
+    QFont font=painter->font() ;
+     font.setPointSize ( 12 );
+     font.setWeight(QFont::DemiBold);
+     painter->setFont(font);
+     if(tag>9) painter->drawText(-9,6,QString::number(tag));
+     else painter->drawText(-5,6,QString::number(tag));
 }
 
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)

@@ -1,6 +1,6 @@
 #include "simulation.h"
 
-Simulation::Simulation(GraphWidget *graph,QString alg, QWidget *parent) : QWidget(parent),algorithm(alg)
+Simulation::Simulation(GraphWidget *graph,QString alg, int start, int end, QWidget *parent) : QWidget(parent),algorithm(alg), startNode(start),endNode(end)
 {
     graphwidget=graph;
     this->resize(1000,650);
@@ -18,7 +18,7 @@ Simulation::Simulation(GraphWidget *graph,QString alg, QWidget *parent) : QWidge
 
 void Simulation::on_bouton_clicked()
 {
-    graphwidget->startSim(algorithm);
+    graphwidget->startSim(algorithm,startNode,endNode);
 }
 
 
