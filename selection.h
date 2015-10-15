@@ -20,8 +20,9 @@ public slots:
     void on_Go_clicked();
 
 private:
-    Ui::Selection *ui;
+    bool oriented;
     int nodes;
+    Ui::Selection *ui;
     QTableWidget *tab;
 };
 

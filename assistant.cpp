@@ -7,10 +7,6 @@ Assistant::Assistant(QWidget *parent)
 {
     addPage(new IntroPage);
     addPage(new InfoPage);
-
-    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/banner.png"));
-    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/background.png"));
-
     setWindowTitle(tr("Assistant de configuration"));
 }
 
@@ -25,11 +21,9 @@ void Assistant::accept()
 }
 
 IntroPage::IntroPage(QWidget* parent)
-        : QWizardPage(parent)
+    : QWizardPage(parent)
 {
     setTitle(tr("Introduction"));
-    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark1.png"));
-
     label = new QLabel(tr("Cet assistant vous aidera à configurer votre graphe. "
                           "Veuillez remplir les champs par les informations requises."));
     label->setWordWrap(true);
@@ -43,8 +37,6 @@ InfoPage::InfoPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Informations"));
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo1.png"));
-
     nodesLabel = new QLabel(tr("&Nombre de sommets:"));
     orientedLabel = new QLabel(tr("Graphe &Orienté?"));
     numNodes = new QSpinBox;

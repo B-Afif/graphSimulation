@@ -100,11 +100,11 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->setPen(QPen(Qt::black, 0));
     painter->drawEllipse(-15, -15, 30, 30);
     QFont font=painter->font() ;
-     font.setPointSize ( 12 );
-     font.setWeight(QFont::DemiBold);
-     painter->setFont(font);
-     if(tag>9) painter->drawText(-9,6,QString::number(tag));
-     else painter->drawText(-5,6,QString::number(tag));
+    font.setPointSize ( 12 );
+    font.setWeight(QFont::DemiBold);
+    painter->setFont(font);
+    if(tag>9) painter->drawText(-9,6,QString::number(tag));
+    else painter->drawText(-5,6,QString::number(tag));
 }
 
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)

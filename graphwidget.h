@@ -33,7 +33,9 @@ protected:
     void scaleView(qreal scaleFactor);
 
 private:
+    int minDistance(int dist[], bool sptSet[]);
     QList<Node *> nodes;
+    QTableWidget* graph;
     int timerId;
     int numNodes;
 };

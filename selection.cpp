@@ -9,10 +9,9 @@
 #include <QStringList>
 
 FenTable::FenTable(int num,bool oriented, QWidget *parent) :
-    QWidget(parent),
+    QWidget(parent),oriented(oriented),nodes(num),
     ui(new Ui::Selection)
 {
-    nodes=num;
     tab=ui->Table;
     ui->setupUi(this);
     ui->Table->setColumnCount(nodes);
@@ -35,21 +34,21 @@ FenTable::FenTable(int num,bool oriented, QWidget *parent) :
         item->setFlags(item->flags() ^ Qt::ItemIsEditable);
         ui->Table->setItem(i,i,item);
     }
-    if (oriented)
+    if (!oriented)
     {
         for (int i=0; i<nodes; i++)
         {
             for (int j=i+1; j<nodes; j++)
             {
                 QTableWidgetItem* item = new QTableWidgetItem();
-                item->setBackgroundColor(Qt::darkGray);
-                item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+                item->setText("-");
                 ui->Table->setItem(i,j,item);
             }
             for (int k=0; k<i; k++)
             {
                 QTableWidgetItem* item = new QTableWidgetItem();
-                item->setText("-");
+                item->setBackgroundColor(Qt::darkGray);
+                item->setFlags(item->flags() ^ Qt::ItemIsEditable);
                 ui->Table->setItem(i,k,item);
             }
         }
@@ -61,18 +60,18 @@ FenTable::FenTable(int num,bool oriented, QWidget *parent) :
             for (int j=0; j<nodes; j++)
             {
                 if (i != j){
-                QTableWidgetItem* item = new QTableWidgetItem();
-                item->setText("-");
-                ui->Table->setItem(i,j,item);
+                    QTableWidgetItem* item = new QTableWidgetItem();
+                    item->setText("-");
+                    ui->Table->setItem(i,j,item);
                 }
             }
         }
     }
     for (int i=0; i<nodes; i++)
-       {
-           ui->startNodeBox->addItem(QString::number(i));
-           ui->finishNodeBox->addItem(QString::number(i));
-       }
+    {
+        ui->startNodeBox->addItem(QString::number(i));
+        ui->finishNodeBox->addItem(QString::number(i));
+    }
 }
 
 FenTable::~FenTable()
@@ -82,6 +81,19 @@ FenTable::~FenTable()
 
 void FenTable::on_Go_clicked()
 {
+    if (!oriented)
+    {
+        for (int i=0; i<nodes; i++)
+        {
+            for (int j=0; j<i; j++)
+            {
+                QTableWidgetItem* item = new QTableWidgetItem();
+                item->setText(ui->Table->item(j,i)->text());
+                ui->Table->setItem(i,j,item);
+            }
+        }
+    }
+    //Sif (ui->algorithmsBox->currentText() == "Plus Court Chemin")
     GraphWidget *widget = new GraphWidget(ui->Table,nodes);
     Simulation *sim = new Simulation(widget,ui->algorithmsBox->currentText(), ui->startNodeBox->currentText().toInt(), ui->finishNodeBox->currentText().toInt());
     sim->show();

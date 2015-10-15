@@ -58,8 +58,8 @@ QRectF Edge::boundingRect() const
 
     return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
                                       destPoint.y() - sourcePoint.y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
+            .normalized()
+            .adjusted(-extra, -extra, extra, extra);
 }
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -73,7 +73,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
     // Draw the line itself
     if (state==1){
-    painter->setPen(QPen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setPen(QPen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     }
     else if (state==-1){
         painter->setPen(QPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -94,7 +94,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
                                               cos(angle - Pi + Pi / 3) * arrowSize);
 
     if (state==1){
-    painter->setBrush(Qt::green);
+        painter->setBrush(Qt::green);
     }
     else if (state==-1){
         painter->setBrush(Qt::red);

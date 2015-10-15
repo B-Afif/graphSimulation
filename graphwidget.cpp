@@ -4,19 +4,17 @@
 #include "delay.h"
 
 #include <math.h>
+#include <climits>
 
 #include <QKeyEvent>
 #include <QQueue>
 #include <QStack>
 
 GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
-    : QGraphicsView(parent)
+    : QGraphicsView(parent), graph(table), numNodes(som)
 {
-    numNodes=som;
     QGraphicsScene *scene = new QGraphicsScene(this);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-    scene->setSceneRect(0, 0, 1200, 720
-                        );
     setScene(scene);
     setCacheMode(CacheBackground);
     setViewportUpdateMode(BoundingRectViewportUpdate);
@@ -42,7 +40,7 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
                 nodes[i]->setPos(((i-1)/4)*factor+factor+50,360);
             }
             else
-            nodes[i]->setPos(((i-1)/4)*factor+factor+50,100);
+                nodes[i]->setPos(((i-1)/4)*factor+factor+50,100);
         }
         else if ((((i-2)%4 == 0)&&(i!=numNodes-1)))
         {
@@ -69,60 +67,54 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
             int value = table->item(i,j)->text().toInt();
             if((table->item(i,j)->text() != "-") && (value!=0))
             {
-              scene->addItem(new Edge(nodes[i], nodes[j],value));
+                scene->addItem(new Edge(nodes[i], nodes[j],value));
             }
         }
     }
 }
 
+int GraphWidget::minDistance(int dist[], bool sptSet[])
+{
+    int min = INT_MAX, min_index;
+
+    for (int i = 0; i < numNodes; i++)
+        if (!sptSet[i] && dist[i] < min)
+            min = dist[i], min_index = i;
+
+    return min_index;
+}
+
 void GraphWidget::startSim(QString alg, int start, int end)
 {
-    /*for (int i=0; i<numNodes; i++)
-    {
-        nodes[i]->setState(0);
-        if(i>0) nodes[i-1]->update();
-        nodes[i]->update();
-        Delay(1000);
-        nodes[i]->setState(-1);
-        nodes[i]->update();
-    }*/
-    /*foreach(Edge *e,nodes[2]->edges())
-    {
-        if(e->destNode()==nodes[4])
-        {
-            e->setState(1);
-            e->update();
-        }
-    }*/
     if(alg == "Parcours en Largeur")
     {
-    QQueue<Node *> Q;
-    Node *o = nodes[start];
-    Q.enqueue(nodes[start]);
-    nodes[start]->setExplored(true);
-    while ((!Q.isEmpty()) && (o->getTag()!=end))
-    {
-        Node *n = Q.dequeue();
-        n->setState(1);
-        if(n->getTag()!=start)
+        QQueue<Node *> Q;
+        Node *o = nodes[start];
+        Q.enqueue(nodes[start]);
+        nodes[start]->setExplored(true);
+        while ((!Q.isEmpty()) && (o->getTag()!=end))
         {
-            o->setState(0);
-            nodes[o->getTag()]->update();
-        }
-        n->update();
-        foreach(Edge* e,n->edges())
-        {
-            if (!e->destNode()->isExplored())
+            Node *n = Q.dequeue();
+            n->setState(1);
+            if(n->getTag()!=start)
             {
-                Q.enqueue(e->destNode());
-                e->destNode()->setExplored(true);
+                o->setState(0);
+                nodes[o->getTag()]->update();
             }
+            n->update();
+            foreach(Edge* e,n->edges())
+            {
+                if (!e->destNode()->isExplored())
+                {
+                    Q.enqueue(e->destNode());
+                    e->destNode()->setExplored(true);
+                }
+            }
+            o=n;
+            Delay(2000);
         }
-        o=n;
-        Delay(2000);
-    }
-    o->setState(0);
-    nodes[o->getTag()]->update();
+        o->setState(0);
+        nodes[o->getTag()]->update();
     }
     if(alg == "Parcours en Profondeur")
     {
@@ -153,6 +145,74 @@ void GraphWidget::startSim(QString alg, int start, int end)
         }
         o->setState(0);
         nodes[o->getTag()]->update();
+    }
+
+    if(alg == "Plus Court Chemin")
+    {
+        int parent[numNodes];
+        int dist[numNodes];
+        bool sptSet[numNodes];
+
+        for (int i = 0; i < numNodes; i++)
+        {
+            dist[i] = INT_MAX;
+            sptSet[i] = false;
+        }
+        dist[start] = 0;
+        parent[start] = -1;
+        for (int i = 0; i < numNodes-1; i++)
+        {
+            int u = minDistance(dist, sptSet);
+
+            sptSet[u] = true;
+
+            if (u==end) break;
+            for (int i = 0; i < numNodes; i++)
+            {
+                int v = graph->item(u,i)->text().toInt();
+                if (!sptSet[i] && v && dist[u] != INT_MAX && dist[u]+v < dist[i])
+                {
+                    dist[i] = dist[u] + v;
+                    parent[i] = u;
+                }
+            }
+        }
+
+        int i = end;
+        QList<Node *> sPath;
+        sPath << nodes[i];
+        while (i!=start)
+        {
+            i = parent[i];
+            sPath<<nodes[i];
+        }
+        for(int i=sPath.size()-1; i>0;i--)
+        {
+            Edge *next;
+            sPath[i]->setState(1);
+            sPath[i]->update();
+            Delay(1000);
+            foreach(Edge *e, sPath[i]->edges())
+            {
+                if(e->destNode()==sPath[i-1]) next =e;
+                e->setState(-1);
+                e->update();
+                Delay(1000);
+            }
+            foreach(Edge *e, sPath[i]->edges())
+            {
+                if(e->destNode()==sPath[i-1]) next =e;
+                e->setState(0);
+                e->update();
+            }
+            Delay(1000);
+            next->setState(1);
+            next->update();
+            Delay(1000);
+        }
+        sPath[0]->setState(1);
+        sPath[0]->update();
+        Delay(1000);
     }
 }
 void GraphWidget::itemMoved()
@@ -206,21 +266,6 @@ void GraphWidget::drawBackground(QPainter *painter, const QRectF &rect)
     painter->fillRect(rect.intersected(sceneRect), gradient);
     painter->setBrush(Qt::NoBrush);
     painter->drawRect(sceneRect);
-
-    // Text
-    QRectF textRect(sceneRect.left() + 4, sceneRect.top() + 4,
-                    sceneRect.width() - 4, sceneRect.height() - 4);
-    QString message(tr("Click and drag the nodes around, and zoom with the mouse "
-                       "wheel or the '+' and '-' keys"));
-
-    QFont font = painter->font();
-    font.setBold(true);
-    font.setPointSize(14);
-    painter->setFont(font);
-    painter->setPen(Qt::lightGray);
-    painter->drawText(textRect.translated(2, 2), message);
-    painter->setPen(Qt::black);
-    painter->drawText(textRect, message);
 }
 
 void GraphWidget::scaleView(qreal scaleFactor)

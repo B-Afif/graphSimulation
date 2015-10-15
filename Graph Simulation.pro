@@ -19,8 +19,5 @@ SOURCES += \
     assistant.cpp \
     selection.cpp
 
-RESOURCES += \
-    classwizard.qrc
-
 FORMS += \
     selection.ui
