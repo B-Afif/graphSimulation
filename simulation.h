@@ -12,7 +12,7 @@ class Simulation : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Simulation(GraphWidget *graphwidget,QString alg, int start, int end, QWidget *parent = 0);
+    explicit Simulation(GraphWidget *graphwidget, QString alg, int start, int end, bool full, QWidget *parent = 0);
 
 signals:
 
@@ -24,6 +24,7 @@ private:
     GraphWidget *graphwidget;
     QString algorithm;
     int startNode,endNode;
+    bool full;
 };
 
 #endif

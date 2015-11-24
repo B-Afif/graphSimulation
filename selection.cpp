@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QMainWindow>
 #include <QStringList>
+#include <QMessageBox>
 
 FenTable::FenTable(int num,bool oriented, QWidget *parent) :
     QWidget(parent),oriented(oriented),nodes(num),
@@ -81,6 +82,7 @@ FenTable::~FenTable()
 
 void FenTable::on_Go_clicked()
 {
+    bool neg = false;
     if (!oriented)
     {
         for (int i=0; i<nodes; i++)
@@ -93,9 +95,27 @@ void FenTable::on_Go_clicked()
             }
         }
     }
-    //Sif (ui->algorithmsBox->currentText() == "Plus Court Chemin")
+    if (ui->algorithmsBox->currentText() == "Plus Court Chemin")
+    {
+        for (int i=0; i<nodes; i++)
+        {
+            for (int j=0; j<nodes; j++)
+            {
+                if (ui->Table->item(i,j)->text().toInt() < 0)
+                {
+                    QMessageBox::critical(this, "Valeur négative", "La recherche du plus court chemin implémente l'algorithme de Dijktra qui nécessite des valeurs positives de tout les arcs");
+                    neg = true;
+                }
+                if (neg) break;
+            }
+            if (neg) break;
+        }
+    }
+    if (!neg)
+    {
     GraphWidget *widget = new GraphWidget(ui->Table,nodes);
-    Simulation *sim = new Simulation(widget,ui->algorithmsBox->currentText(), ui->startNodeBox->currentText().toInt(), ui->finishNodeBox->currentText().toInt());
+    Simulation *sim = new Simulation(widget,ui->algorithmsBox->currentText(), ui->startNodeBox->currentText().toInt(), ui->finishNodeBox->currentText().toInt(), ui->fullSearch->isChecked());
     sim->show();
-    this->close();
+    this->showMinimized();
+    }
 }

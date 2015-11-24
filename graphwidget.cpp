@@ -75,7 +75,7 @@ GraphWidget::GraphWidget(QTableWidget *table,int som, QWidget *parent)
 
 int GraphWidget::minDistance(int dist[], bool sptSet[])
 {
-    int min = INT_MAX, min_index;
+    int min = INT_MAX, min_index=0;
 
     for (int i = 0; i < numNodes; i++)
         if (!sptSet[i] && dist[i] < min)
@@ -84,7 +84,7 @@ int GraphWidget::minDistance(int dist[], bool sptSet[])
     return min_index;
 }
 
-void GraphWidget::startSim(QString alg, int start, int end)
+void GraphWidget::startSim(QString alg, int start, int end,bool full)
 {
     if(alg == "Parcours en Largeur")
     {
@@ -92,6 +92,8 @@ void GraphWidget::startSim(QString alg, int start, int end)
         Node *o = nodes[start];
         Q.enqueue(nodes[start]);
         nodes[start]->setExplored(true);
+        if (!full)
+        {
         while ((!Q.isEmpty()) && (o->getTag()!=end))
         {
             Node *n = Q.dequeue();
@@ -113,6 +115,31 @@ void GraphWidget::startSim(QString alg, int start, int end)
             o=n;
             Delay(2000);
         }
+        }
+        else
+        {
+            while (!Q.isEmpty())
+            {
+                Node *n = Q.dequeue();
+                n->setState(1);
+                if(n->getTag()!=start)
+                {
+                    o->setState(0);
+                    nodes[o->getTag()]->update();
+                }
+                n->update();
+                foreach(Edge* e,n->edges())
+                {
+                    if (!e->destNode()->isExplored())
+                    {
+                        Q.enqueue(e->destNode());
+                        e->destNode()->setExplored(true);
+                    }
+                }
+                o=n;
+                Delay(2000);
+            }
+        }
         o->setState(0);
         nodes[o->getTag()]->update();
     }
@@ -122,6 +149,8 @@ void GraphWidget::startSim(QString alg, int start, int end)
         Node *o = nodes[start];
         s.push(nodes[start]);
         nodes[start]->setExplored(true);
+        if (!full)
+        {
         while ((!s.isEmpty()) && (o->getTag()!=end))
         {
             Node *n = s.pop();
@@ -142,6 +171,31 @@ void GraphWidget::startSim(QString alg, int start, int end)
             }
             o=n;
             Delay(2000);
+        }
+        }
+        else
+        {
+            while (!s.isEmpty())
+            {
+                Node *n = s.pop();
+                n->setState(1);
+                if(n->getTag()!= start)
+                {
+                    o->setState(0);
+                    nodes[o->getTag()]->update();
+                }
+                n->update();
+                for(int i=n->edges().size()-1; i>=0;i--)
+                {
+                    if (!n->edges()[i]->destNode()->isExplored())
+                    {
+                        s.push(n->edges()[i]->destNode());
+                        n->edges()[i]->destNode()->setExplored(true);
+                    }
+                }
+                o=n;
+                Delay(2000);
+            }
         }
         o->setState(0);
         nodes[o->getTag()]->update();
@@ -188,7 +242,7 @@ void GraphWidget::startSim(QString alg, int start, int end)
         }
         for(int i=sPath.size()-1; i>0;i--)
         {
-            Edge *next;
+            Edge *next=NULL;
             sPath[i]->setState(1);
             sPath[i]->update();
             Delay(1000);

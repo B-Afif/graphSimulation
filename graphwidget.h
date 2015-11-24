@@ -15,7 +15,7 @@ public:
 
     void itemMoved();
 
-    void startSim(QString alg, int start, int end);
+    void startSim(QString alg, int start, int end, bool full);
 
 public slots:
     void shuffle();
